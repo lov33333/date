@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>[초대장 클릭]</title>
+<style>
+*{box-sizing:border-box} body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;background:linear-gradient(180deg,#ffd9ea,#fff0f7);color:#7b3556;overflow:hidden}
+.page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative}
+.card{width:min(430px,94vw);min-height:600px;border:3px solid #ff9fc5;border-radius:34px;background:#fffafd;box-shadow:0 15px 45px #d56d9940;position:relative;overflow:hidden;padding:38px 25px;text-align:center}
+h1{font-size:34px;margin:22px 0 12px;color:#df5d92}.sub{font-size:17px;margin-bottom:28px}
+.mamel{font-size:78px;filter:drop-shadow(0 5px 2px #ffb1cf);animation:bob 2s ease-in-out infinite}
+.ribbon{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:30px}
+button{border:0;border-radius:999px;padding:15px 25px;font-size:18px;font-weight:800;cursor:pointer;margin:8px;box-shadow:0 6px 15px #d66b9740}
+.yes{background:#ff8fba;color:white}.no{background:#ffe2ee;color:#b55a7e;position:relative}
+.hidden{display:none}.field{margin:18px 0;text-align:left}.field label{display:block;font-weight:800;margin-bottom:7px}.field input,.field select{width:100%;padding:14px;border:2px solid #ffc0d8;border-radius:16px;background:white;font-size:16px;color:#71324f}
+.next{background:#df6b9c;color:#fff;width:80%}.final{font-size:25px;font-weight:900;line-height:1.6;color:#df5d92}
+.float{position:absolute;inset:0;pointer-events:none;overflow:hidden}.heart{position:absolute;font-size:20px;animation:up 5s linear forwards}
+.spark{position:absolute;animation:pop .8s ease-out forwards}
+@keyframes bob{50%{transform:translateY(-9px) rotate(-3deg)}}@keyframes up{from{transform:translateY(110vh);opacity:0}15%{opacity:1}to{transform:translateY(-15vh);opacity:0}}@keyframes pop{0%{transform:scale(.2);opacity:0}50%{transform:scale(1.5);opacity:1}100%{transform:scale(.7);opacity:0}}
+.small{font-size:13px;color:#b47b94;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="float" id="float"></div>
+<div class="page"><main class="card" id="app"></main></div>
+<script>
+const app=document.getElementById('app'), float=document.getElementById('float');
+let audioCtx;
+function sound(freq=700){
+ try{audioCtx ||= new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+ o.frequency.value=freq;o.type='sine';g.gain.setValueAtTime(.06,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.15);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.15)}catch(e){}
+}
+function hearts(){
+ for(let i=0;i<18;i++){let x=document.createElement('div');x.className='heart';x.textContent=['💗','💕','🎀','🌸'][Math.floor(Math.random()*4)];x.style.left=Math.random()*100+'%';x.style.animationDelay=Math.random()*2+'s';x.style.fontSize=(14+Math.random()*18)+'px';float.appendChild(x);setTimeout(()=>x.remove(),6500)}
+}
+function boom(){
+ for(let i=0;i<25;i++){let x=document.createElement('div');x.className='spark';x.textContent=['✨','💗','🎀','🌸'][Math.floor(Math.random()*4)];x.style.left=(20+Math.random()*60)+'%';x.style.top=(20+Math.random()*50)+'%';float.appendChild(x);setTimeout(()=>x.remove(),900)}
+}
+function home(){
+ app.innerHTML=`<div class="ribbon">🎀</div><div class="mamel">🐰</div><h1>히영이랑 놀아줘 !</h1><div class="sub">승훈아, 나랑 같이 놀아줄래? 💗</div>
+ <button class="yes" onclick="yes()">조아~ㅋ</button><button class="no" id="no">시러</button>
+ <div class="small">🎀 작은 초대장이 도착했어 🎀</div>`;
+ const n=document.getElementById('no');
+ n.addEventListener('mouseenter',moveNo);n.addEventListener('touchstart',e=>{e.preventDefault();moveNo()});
+}
+function moveNo(){sound(350);const n=document.getElementById('no');n.style.position='fixed';n.style.left=(8+Math.random()*72)+'vw';n.style.top=(15+Math.random()*70)+'vh';n.textContent=['안돼 ㅠㅠ','잡아봐ㅋ','진짜 싫어?','한 번만 🥺'][Math.floor(Math.random()*4)]}
+function yes(){sound(900);boom();setTimeout(datePage,250)}
+function datePage(){
+ app.innerHTML=`<div class="ribbon">🎀</div><div class="mamel">🐰</div><h1>데이트 약속 정하기 💕</h1><div class="sub">승훈이가 직접 골라줘!</div>
+ <div class="field"><label>📅 언제 만날까?</label><input id="date" type="date"></div>
+ <div class="field"><label>⏰ 몇 시에 만날까?</label><input id="time" type="time"></div>
+ <button class="next" onclick="details()">다 골랐어 💗</button>`;
+}
+function details(){
+ const d=document.getElementById('date').value,t=document.getElementById('time').value;
+ if(!d||!t){sound(300);alert('날짜랑 시간을 골라줘! 🎀');return}
+ sound(850);
+ app.innerHTML=`<div class="ribbon">🎀</div><div class="mamel">🐰</div><h1>어디서 놀까? 🌸</h1>
+ <div class="field"><label>📍 장소</label><input id="place" placeholder="예: 서면, 광안리, 카페 등"></div>
+ <div class="field"><label>🍓 뭐 하고 놀까?</label><select id="activity"><option>맛있는 거 먹기 🍰</option><option>카페 가기 ☕</option><option>영화 보기 🎬</option><option>산책하기 🌸</option><option>승훈이가 정하기 💗</option></select></div>
+ <button class="next" onclick="finish('${d}','${t}')">약속 완료 💕</button>`;
+}
+function finish(d,t){
+ const p=document.getElementById('place').value||'승훈이가 정한 곳',a=document.getElementById('activity').value;
+ sound(1000);boom();hearts();
+ app.innerHTML=`<div class="ribbon">🎀</div><div class="mamel">🐰</div><div class="final">놀아주기로 해서<br>고마워 ! 💗<br><span style="font-size:19px">재밌게 놀자 🫪</span></div>
+ <div class="sub" style="margin-top:25px">📅 ${d}<br>⏰ ${t}<br>📍 ${p}<br>${a}</div><div class="small">히영이의 작은 초대장 🎀</div>`;
+}
+home(); hearts();
+</script>
+</body>
+</html>
